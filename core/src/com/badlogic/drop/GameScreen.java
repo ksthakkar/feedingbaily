@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -22,13 +23,15 @@ public class GameScreen implements Screen {
 
     Texture dropImage;
     Texture bucketImage;
-    Sound dropSound;
+   // Sound dropSound;
     Music rainMusic;
     OrthographicCamera camera;
     Rectangle bucket;
     Array<Rectangle> raindrops;
     long lastDropTime;
     int dropsGathered;
+    private Stage stage;
+
 
     public GameScreen(final Drop game) {
         this.game = game;
@@ -38,8 +41,8 @@ public class GameScreen implements Screen {
         bucketImage = new Texture(Gdx.files.internal("bucket.png"));
 
         // load the drop sound effect and the rain background "music"
-        dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
-        rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
+       // dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
+        rainMusic = Gdx.audio.newMusic(Gdx.files.internal("song.mp3"));
         rainMusic.setLooping(true);
 
         // create the camera and the SpriteBatch
@@ -107,6 +110,7 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Keys.RIGHT))
             bucket.x += 200 * Gdx.graphics.getDeltaTime();
 
+
         // make sure the bucket stays within the screen bounds
         if (bucket.x < 0)
             bucket.x = 0;
@@ -121,6 +125,7 @@ public class GameScreen implements Screen {
         // the screen or that hit the bucket. In the later case we increase the
         // value our drops counter and add a sound effect.
         Iterator<Rectangle> iter = raindrops.iterator();
+
         while (iter.hasNext()) {
             Rectangle raindrop = iter.next();
             raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
@@ -128,10 +133,12 @@ public class GameScreen implements Screen {
                 iter.remove();
             if (raindrop.overlaps(bucket)) {
                 dropsGathered++;
-                dropSound.play();
+               // dropSound.play();
                 iter.remove();
+
             }
         }
+
     }
 
     @Override
@@ -161,7 +168,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         dropImage.dispose();
         bucketImage.dispose();
-        dropSound.dispose();
+       // dropSound.dispose();
         rainMusic.dispose();
     }
 

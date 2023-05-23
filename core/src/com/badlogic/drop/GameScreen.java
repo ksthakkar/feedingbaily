@@ -4,6 +4,7 @@ package com.badlogic.drop;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -24,6 +25,7 @@ public class GameScreen implements Screen {
     Texture dropImage;
     Texture bucketImage;
    // Sound dropSound;
+    Texture controlScreenImage;
     Music rainMusic;
     OrthographicCamera camera;
     Rectangle bucket;
@@ -34,6 +36,9 @@ public class GameScreen implements Screen {
 
 
     public GameScreen(final Drop game) {
+
+
+
         this.game = game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each

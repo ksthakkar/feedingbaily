@@ -11,19 +11,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-
-public class MainMenuScreen implements Screen{
+public class TutorialScreen implements Screen {
     private Stage stage;
 
 
     final Drop game;
-    Texture titleScreenImage;
     Texture controlScreenImage;
 
     OrthographicCamera camera;
 
-    public MainMenuScreen(final Drop game) {
+    public TutorialScreen(final Drop game) {
         this.game = game;
 
         camera = new OrthographicCamera();
@@ -32,7 +29,7 @@ public class MainMenuScreen implements Screen{
         Gdx.input.setInputProcessor(stage);
 
         // Load your start screen image as a texture
-        Texture startScreenTexture = new Texture(Gdx.files.internal("TitleScreens.png"));
+        Texture startScreenTexture = new Texture(Gdx.files.internal("ControlScreen.png"));
 
         // Create an Image actor from the texture
         Image startScreenImage = new Image(startScreenTexture);
@@ -44,7 +41,6 @@ public class MainMenuScreen implements Screen{
         stage.addActor(startScreenImage);
 
 
-
     }
 
     @Override
@@ -54,23 +50,23 @@ public class MainMenuScreen implements Screen{
 
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
-        titleScreenImage = new Texture(Gdx.files.internal("TitleScreens.png"));
         controlScreenImage = new Texture(Gdx.files.internal("ControlScreen.png"));
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.batch.draw(titleScreenImage, 0, 0);
+        game.batch.draw(controlScreenImage, 0, 0);
 
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 
 
-                game.setScreen(new TutorialScreen(game));
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                game.setScreen(new GameScreen(game));
                 dispose();
-
+            }
         }
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
@@ -100,8 +96,4 @@ public class MainMenuScreen implements Screen{
     public void dispose() {
 
     }
-
-
-    //...Rest of class omitted for succinctness.
-
 }

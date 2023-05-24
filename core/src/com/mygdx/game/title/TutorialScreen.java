@@ -29,7 +29,7 @@ public class TutorialScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         // Load your start screen image as a texture
-        Texture startScreenTexture = new Texture(Gdx.files.internal("ControlScreen.png"));
+        Texture startScreenTexture = new Texture(Gdx.files.internal("ControlScreens.png"));
 
         // Create an Image actor from the texture
         Image startScreenImage = new Image(startScreenTexture);
@@ -50,7 +50,7 @@ public class TutorialScreen implements Screen {
 
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
-        controlScreenImage = new Texture(Gdx.files.internal("ControlScreen.png"));
+        controlScreenImage = new Texture(Gdx.files.internal("ControlScreens.png"));
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
@@ -58,16 +58,21 @@ public class TutorialScreen implements Screen {
         game.batch.begin();
         game.batch.draw(controlScreenImage, 0, 0);
 
+
+
         game.batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 
 
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+
+
+
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
                 game.setScreen(new GameScreen(game));
                 dispose();
             }
-        }
+
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }

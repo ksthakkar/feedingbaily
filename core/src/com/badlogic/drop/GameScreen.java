@@ -42,8 +42,8 @@ public class GameScreen implements Screen {
         this.game = game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each
-        dropImage = new Texture(Gdx.files.internal("droplet.png"));
-        bucketImage = new Texture(Gdx.files.internal("bucket.png"));
+        dropImage = new Texture(Gdx.files.internal("DogTreat.png"));
+        bucketImage = new Texture(Gdx.files.internal("BaileyY.png"));
 
         // load the drop sound effect and the rain background "music"
        // dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
@@ -96,7 +96,7 @@ public class GameScreen implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
-        game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 480);
+        game.font.draw(game.batch, "Treats Collected: " + dropsGathered, 0, 480);
         game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
         for (Rectangle raindrop : raindrops) {
             game.batch.draw(dropImage, raindrop.x, raindrop.y);

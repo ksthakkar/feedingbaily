@@ -11,6 +11,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -18,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.title.LoserScreen;
+import com.mygdx.game.title.TutorialScreen;
 
 public class GameScreen implements Screen {
     final Drop game;
@@ -30,9 +33,23 @@ public class GameScreen implements Screen {
     OrthographicCamera camera;
     Rectangle bucket;
     Array<Rectangle> raindrops;
+
+    Array<Rectangle> healthKits;
     long lastDropTime;
+    long lastDropTimes;
+
     int dropsGathered;
     private Stage stage;
+    float health = 15;
+    Texture healthBar;
+    Rectangle transparentBar;
+
+    int totalHealth;
+    Texture healthBarSegment;
+    TextureRegion helthBar;
+    Texture firstAidKit;
+
+    int counter = 1;
 
 
     public GameScreen(final Drop game) {
@@ -44,6 +61,9 @@ public class GameScreen implements Screen {
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("DogTreat.png"));
         bucketImage = new Texture(Gdx.files.internal("BaileyY.png"));
+        healthBar = new Texture(Gdx.files.internal("EmptyHealthBar.png"));
+        healthBarSegment = new Texture(Gdx.files.internal("LongerHealthBar.png"));
+        firstAidKit = new Texture(Gdx.files.internal("FirstAidKit.png"));
 
         // load the drop sound effect and the rain background "music"
        // dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
@@ -66,6 +86,16 @@ public class GameScreen implements Screen {
         raindrops = new Array<Rectangle>();
         spawnRaindrop();
 
+        healthKits = new Array<Rectangle>();
+        spawnHealthKit();
+
+        transparentBar = new Rectangle();
+        transparentBar.width = Gdx.graphics.getWidth();
+        transparentBar.height = 1;
+
+
+
+
     }
 
     private void spawnRaindrop() {
@@ -76,6 +106,15 @@ public class GameScreen implements Screen {
         raindrop.height = 64;
         raindrops.add(raindrop);
         lastDropTime = TimeUtils.nanoTime();
+    }
+    private void spawnHealthKit(){
+        Rectangle healthKit = new Rectangle();
+        healthKit.x = MathUtils.random(0, 800 - 64);
+        healthKit.y = 480;
+        healthKit.width = 64;
+        healthKit.height = 64;
+        healthKits.add(healthKit);
+        lastDropTimes = TimeUtils.nanoTime();
     }
 
     @Override
@@ -101,6 +140,10 @@ public class GameScreen implements Screen {
         for (Rectangle raindrop : raindrops) {
             game.batch.draw(dropImage, raindrop.x, raindrop.y);
         }
+        for(Rectangle healthKit : healthKits){
+            game.batch.draw(firstAidKit, healthKit.x, healthKit.y);
+
+        }
         game.batch.end();
 
         // process user input
@@ -125,26 +168,80 @@ public class GameScreen implements Screen {
         // check if we need to create a new raindrop
         if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
             spawnRaindrop();
+        if (TimeUtils.nanoTime() - lastDropTimes > 1000000000)
+            spawnHealthKit();
+
 
         // move the raindrops, remove any that are beneath the bottom edge of
         // the screen or that hit the bucket. In the later case we increase the
         // value our drops counter and add a sound effect.
         Iterator<Rectangle> iter = raindrops.iterator();
 
+        game.batch.begin();
+
+
+        game.batch.draw(healthBar, 625,350 ,200 , 200 );
+        totalHealth = 15;
+        game.batch.end();
+        game.batch.begin();
+
+        game.batch.draw(healthBarSegment, 675, 325, 10*health, 200);
+        game.batch.end();
+
+
+
+
+
+
+
+
         while (iter.hasNext()) {
+            counter++;
             Rectangle raindrop = iter.next();
             raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
-            if (raindrop.y + 64 < 0)
+
+
+            if (raindrop.y + 64 < 0/*||healthKit.y+64<0*/)
                 iter.remove();
+                //iterAToR.remove();
+
             if (raindrop.overlaps(bucket)) {
                 dropsGathered++;
-               // dropSound.play();
+                // dropSound.play();
                 iter.remove();
 
             }
-        }
 
-    }
+            if (raindrop.overlaps(transparentBar)) {
+                health -= 0.3333333;
+                if (health <= 0.0000001) {
+                    game.setScreen(new LoserScreen(game)); //change code
+
+                }
+
+            }
+            if(counter%3==0){
+                Iterator<Rectangle> healthBoxIterator = healthKits.iterator();
+                while (healthBoxIterator.hasNext()) {
+                    Rectangle healthBox = healthBoxIterator.next();
+                    healthBox.y -= 100 * Gdx.graphics.getDeltaTime()*2;
+
+                    if (healthBox.overlaps(bucket)) {
+                        health += 5; // Adjust the amount of health restored as desired
+                        if (health > 15) {
+                            health = 15; // Limit the health to a maximum value
+                        }
+                        healthBoxIterator.remove();
+                    }
+                }
+            }
+
+        }}
+
+
+
+
+    //}
 
     @Override
     public void resize(int width, int height) {

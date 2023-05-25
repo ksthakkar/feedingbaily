@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
 public class HealthBar implements Screen{
+    Texture healthBar;
 
     @Override
     public void show() {
@@ -21,6 +22,9 @@ public class HealthBar implements Screen{
 
     @Override
     public void render(float delta) {
+        healthBar = new Texture(Gdx.files.internal("EmptyHealthBar.png"));
+
+
 
     }
 

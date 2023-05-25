@@ -11,6 +11,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -33,6 +34,13 @@ public class GameScreen implements Screen {
     long lastDropTime;
     int dropsGathered;
     private Stage stage;
+    float health = 15;
+    Texture healthBar;
+    Rectangle transparentBar;
+
+    int totalHealth;
+    Texture healthBarSegment;
+    TextureRegion helthBar;
 
 
     public GameScreen(final Drop game) {
@@ -44,6 +52,8 @@ public class GameScreen implements Screen {
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("DogTreat.png"));
         bucketImage = new Texture(Gdx.files.internal("BaileyY.png"));
+        healthBar = new Texture(Gdx.files.internal("EmptyHealthBar.png"));
+        healthBarSegment = new Texture(Gdx.files.internal("LongerHealthBar.png"));
 
         // load the drop sound effect and the rain background "music"
        // dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
@@ -65,6 +75,13 @@ public class GameScreen implements Screen {
         // create the raindrops array and spawn the first raindrop
         raindrops = new Array<Rectangle>();
         spawnRaindrop();
+
+        transparentBar = new Rectangle();
+        transparentBar.width = Gdx.graphics.getWidth();
+        transparentBar.height = 1;
+
+
+
 
     }
 
@@ -130,6 +147,19 @@ public class GameScreen implements Screen {
         // the screen or that hit the bucket. In the later case we increase the
         // value our drops counter and add a sound effect.
         Iterator<Rectangle> iter = raindrops.iterator();
+        game.batch.begin();
+
+
+        game.batch.draw(healthBar, 625,350 ,200 , 200 );
+        totalHealth = 15;
+        game.batch.end();
+        game.batch.begin();
+
+        game.batch.draw(healthBarSegment, 675, 325, 10*health, 200);
+        game.batch.end();
+
+
+
 
         while (iter.hasNext()) {
             Rectangle raindrop = iter.next();
@@ -142,9 +172,21 @@ public class GameScreen implements Screen {
                 iter.remove();
 
             }
-        }
+            if (raindrop.overlaps(transparentBar)){
+                health -= 0.3333333;
+                if(health <= 0.0000001){
+                    System.exit(0); //change code
 
-    }
+                }
+
+            }
+
+        }}
+
+
+
+
+    //}
 
     @Override
     public void resize(int width, int height) {

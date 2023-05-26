@@ -8,6 +8,7 @@ public class Player extends GameObject {
 
     private Texture playerImage;
     private Vector2 playerPos;
+    private Vector2 groundCheckPos;
     private Vector2 playerVelocity;
     private float gravity;
 
@@ -18,6 +19,7 @@ public class Player extends GameObject {
     public Player() {
         playerImage = new Texture(Gdx.files.internal("dunlea2.png"));
         playerPos = new Vector2(100, 100);
+        groundCheckPos = new Vector2(100, 80);
         playerVelocity = new Vector2();
         gravity = 800f;
     }
@@ -67,9 +69,16 @@ public class Player extends GameObject {
 
     }
 
+    public Vector2 getGroundCheckPos() {
+        return groundCheckPos;
+    }
+
     public void run(){
         playerVelocity.y -= gravity * Gdx.graphics.getDeltaTime();
         playerPos.add(playerVelocity.cpy().scl(Gdx.graphics.getDeltaTime()));
+
+        groundCheckPos.x = playerPos.x;;
+        groundCheckPos.y = playerPos.y - 20;
     }
 
     @Override

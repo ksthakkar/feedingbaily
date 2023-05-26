@@ -52,14 +52,14 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             player.move(Player.Direction.RIGHT);
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) && player.getGroundCheckPos().y <= tempGround.y) {
             player.jump();
         }
 
 
         camera.update();
         game.batch.begin();
-        //game.batch.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
 
         //game.font.draw(game.batch, "", 100, 150);
         //game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);

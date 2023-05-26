@@ -1,16 +1,15 @@
 package com.badlogic.drop;
 
 
-import java.util.Iterator;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -18,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.Iterator;
 
 public class GameScreen implements Screen {
     final Drop game;
@@ -33,6 +34,14 @@ public class GameScreen implements Screen {
     long lastDropTime;
     int dropsGathered;
     private Stage stage;
+
+    TiledMap map1;
+    OrthogonalTiledMapRenderer tiledMapRenderer;
+
+    float minX = 0;
+    float minY = 0;
+    float maxX = 6400;
+    float maxY = 6400;
 
 
     public GameScreen(final Drop game) {
@@ -52,19 +61,24 @@ public class GameScreen implements Screen {
 
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, 320, 320);
 
         // create a Rectangle to logically represent the bucket
         bucket = new Rectangle();
-        bucket.x = 800 / 2 - 64 / 2; // center the bucket horizontally
+        bucket.x = (float) 800 / 2 - (float) 64 / 2; // center the bucket horizontally
         bucket.y = 20; // bottom left corner of the bucket is 20 pixels above
         // the bottom screen edge
         bucket.width = 64;
         bucket.height = 64;
 
         // create the raindrops array and spawn the first raindrop
-        raindrops = new Array<Rectangle>();
+        raindrops = new Array<>();
         spawnRaindrop();
+
+        //instantiate tile map
+        TmxMapLoader mapLoader = new TmxMapLoader();
+        map1 = mapLoader.load("Maps/map1.tmx");
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(map1);
 
     }
 
@@ -86,8 +100,7 @@ public class GameScreen implements Screen {
         // of the color to be used to clear the screen.
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
-        // tell the camera to update its matrices.
-        camera.update();
+
 
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
@@ -96,6 +109,10 @@ public class GameScreen implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
+
+        tiledMapRenderer.setView(camera);
+        tiledMapRenderer.render();
+
         game.font.draw(game.batch, "Treats Collected: " + dropsGathered, 0, 480);
         game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
         for (Rectangle raindrop : raindrops) {
@@ -108,7 +125,7 @@ public class GameScreen implements Screen {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            bucket.x = touchPos.x - 64 / 2;
+            bucket.x = touchPos.x - (float) 64 / 2;
         }
         if (Gdx.input.isKeyPressed(Keys.LEFT))
             bucket.x -= 200 * Gdx.graphics.getDeltaTime();
@@ -143,6 +160,10 @@ public class GameScreen implements Screen {
 
             }
         }
+        // tell the camera to update its matrices.
+        camera.position.x = MathUtils.clamp(bucket.x + bucketImage.getWidth() / 2, minX + camera.viewportWidth / 2, maxX - camera.viewportWidth / 2);
+        camera.position.y = MathUtils.clamp(bucket.y + bucketImage.getHeight() / 2, minY + camera.viewportHeight / 2, maxY - camera.viewportHeight / 2);
+        camera.update();
 
     }
 
@@ -175,6 +196,9 @@ public class GameScreen implements Screen {
         bucketImage.dispose();
        // dropSound.dispose();
         rainMusic.dispose();
+
+        map1.dispose();
+        tiledMapRenderer.dispose();
     }
 
 }

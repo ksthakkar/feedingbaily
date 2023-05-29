@@ -1,6 +1,7 @@
 package com.badlogic.drop;
 
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
@@ -21,6 +22,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.title.LoserScreen;
 import com.mygdx.game.title.TutorialScreen;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Animation;
+
 
 public class GameScreen implements Screen {
     final Drop game;
@@ -46,10 +50,13 @@ public class GameScreen implements Screen {
 
     int totalHealth;
     Texture healthBarSegment;
-    TextureRegion helthBar;
     Texture firstAidKit;
+    TextureRegion textureRegion;
 
     int counter = 1;
+
+    ArrayList<Shooter> wrenches = new ArrayList<Shooter>();
+    ;
 
 
     public GameScreen(final Drop game) {
@@ -67,8 +74,8 @@ public class GameScreen implements Screen {
 
         // load the drop sound effect and the rain background "music"
        // dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
-        rainMusic = Gdx.audio.newMusic(Gdx.files.internal("song.mp3"));
-        rainMusic.setLooping(true);
+        //rainMusic = Gdx.audio.newMusic(Gdx.files.internal("song.mp3"));
+        //rainMusic.setLooping(true);
 
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
@@ -98,6 +105,14 @@ public class GameScreen implements Screen {
 
     }
 
+
+
+// Draw the current frame
+
+
+
+
+
     private void spawnRaindrop() {
         Rectangle raindrop = new Rectangle();
         raindrop.x = MathUtils.random(0, 800 - 64);
@@ -116,6 +131,17 @@ public class GameScreen implements Screen {
         healthKits.add(healthKit);
         lastDropTimes = TimeUtils.nanoTime();
     }
+    private void updateWrenches(float delta) {
+        Iterator<Shooter> iterator = wrenches.iterator();
+        while (iterator.hasNext()) {
+            Shooter wrench = iterator.next();
+            wrench.update(delta);
+            if (wrench.getY() > Gdx.graphics.getHeight()) {
+                iterator.remove();
+            }
+        }
+    }
+
 
     @Override
     public void render(float delta) {
@@ -135,6 +161,10 @@ public class GameScreen implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
+        for(Shooter wrench: wrenches){
+            wrench.render(game.batch);
+
+        }
         game.font.draw(game.batch, "Treats Collected: " + dropsGathered, 0, 480);
         game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
         for (Rectangle raindrop : raindrops) {
@@ -153,10 +183,49 @@ public class GameScreen implements Screen {
             camera.unproject(touchPos);
             bucket.x = touchPos.x - 64 / 2;
         }
+        /*if(Gdx.input.isKeyPressed(Keys.SPACE)){
+            int frameCols = 4; // Number of columns in the GIF
+            int frameRows = 4; // Number of rows in the GIF
+            int frameWidth = textureRegion.getRegionWidth() / frameCols;
+            int frameHeight = textureRegion.getRegionHeight() / frameRows;
+
+            TextureRegion[][] frames = textureRegion.split(frameWidth, frameHeight);
+            float frameDuration = 0.1f; // Duration of each frame in seconds
+            Animation<TextureRegion> animation = new Animation<>(frameDuration, frames[0]);
+            float stateTime = 0f; // Accumulated time for the animation
+            TextureRegion currentFrame = animation.getKeyFrame(stateTime, true); // true indicates looping
+
+// In your render/update method
+            stateTime += Gdx.graphics.getDeltaTime(); // Accumulate the elapsed time
+            currentFrame = animation.getKeyFrame(stateTime, true); // Get the current frame
+
+            game.batch.begin();
+            spawnThrow();
+            game.batch.draw(currentFrame, 10, 10); // Replace x and y with the desired position
+            game.batch.end();
+        }*/
+        //Shooting Code
+        if (Gdx.input.isKeyPressed(Keys.SPACE) && wrenches.size()<=1) {
+            wrenches.add(new Shooter(bucket.x, bucket.y + bucket.height, game));
+        }
+        updateWrenches(delta);
+        ArrayList<Shooter> wrenchesToRemove = new ArrayList();
+        game.batch.begin();
+        for (Shooter wrench : wrenches) {
+            wrench.render(game.batch);
+        }
+
+       wrenches.removeAll(wrenchesToRemove);
+        game.batch.end();
+
+        //Movement Code
         if (Gdx.input.isKeyPressed(Keys.LEFT))
             bucket.x -= 200 * Gdx.graphics.getDeltaTime();
         if (Gdx.input.isKeyPressed(Keys.RIGHT))
             bucket.x += 200 * Gdx.graphics.getDeltaTime();
+        if(Gdx.input.isKeyPressed(Keys.P)||Gdx.input.isKeyPressed(Keys.ESCAPE)){
+            game.setScreen(new TutorialScreen(game));
+        }
 
 
         // make sure the bucket stays within the screen bounds
@@ -251,7 +320,7 @@ public class GameScreen implements Screen {
     public void show() {
         // start the playback of the background music
         // when the screen is shown
-        rainMusic.play();
+        //rainMusic.play();
     }
 
     @Override
@@ -271,7 +340,7 @@ public class GameScreen implements Screen {
         dropImage.dispose();
         bucketImage.dispose();
        // dropSound.dispose();
-        rainMusic.dispose();
+        //rainMusic.dispose();
     }
 
 }

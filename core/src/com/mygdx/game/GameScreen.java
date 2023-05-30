@@ -13,9 +13,11 @@ import java.awt.*;
 
 public class GameScreen implements Screen {
 
+    Enemy testE;
     Player player;
     final Baily game;
     OrthographicCamera camera;
+
 
     Rectangle tempGround;
     public GameScreen(final Baily game){
@@ -25,7 +27,7 @@ public class GameScreen implements Screen {
         player = new Player();
 
         tempGround = new Rectangle(0, 50, Gdx.graphics.getWidth(), 20);
-
+        testE = new Enemy("benis2.png", player);
     }
     @Override
     public void show() {
@@ -40,6 +42,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         player.run();
+        testE.advance(100);
 
         if (player.getY() <= tempGround.y) {
             player.setY(tempGround.y);
@@ -64,6 +67,7 @@ public class GameScreen implements Screen {
         //game.font.draw(game.batch, "", 100, 150);
         //game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
         game.batch.draw(player.getTexture(), player.getX(), player.getY());
+        game.batch.draw(testE.getEnemyImage(), testE.getX(), testE.getY());
 
         game.batch.end();
 

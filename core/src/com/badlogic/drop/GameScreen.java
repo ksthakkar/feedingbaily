@@ -136,7 +136,7 @@ public class GameScreen implements Screen {
         while (iterator.hasNext()) {
             Shooter wrench = iterator.next();
             wrench.update(delta);
-            if (wrench.getY() > Gdx.graphics.getHeight()) {
+            if (wrench.getX() > Gdx.graphics.getHeight()) {
                 iterator.remove();
             }
         }

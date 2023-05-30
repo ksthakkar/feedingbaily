@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Shooter {
     final Drop game;
-    public static final int SPEED = 200;
-    public static final int DEFAULT_Y = 20;
+    public static final int SPEED = 500;
+    public static final int DEFAULT_X = 20;
     private static Texture texture;
     float x, y;
     public boolean remove = false;
@@ -22,8 +22,8 @@ public class Shooter {
 
     public Shooter(float x, float y, final Drop game) {
         this.game = game;
-        this.x = x; // need to change for actual game
-        this.y = DEFAULT_Y; // need to change for actual game
+        this.x = DEFAULT_X; // need to change for actual game
+        this.y = 20; // need to change for actual game
         texture = new Texture(Gdx.files.internal("exThrow.png"));
         horWrench = new Texture(Gdx.files.internal("BetterWrenchHorizontal.png"));
         verWrench = new Texture(Gdx.files.internal("BetterWrenchVertical.png"));
@@ -52,10 +52,13 @@ public class Shooter {
     public float getY() {
         return y;
     }
+    public float getX(){
+        return x;
+    }
 
     public void update(float deltaTime) {
-        y += SPEED * deltaTime;
-        if (y > Gdx.graphics.getHeight())
+        x += SPEED * deltaTime;
+        if (x > Gdx.graphics.getWidth())
             remove = true;
     }
 

@@ -22,7 +22,7 @@ public class Shooter {
 
     public Shooter(float x, float y, final Drop game) {
         this.game = game;
-        this.x = DEFAULT_X; // need to change for actual game
+        this.x = x; // need to change for actual game
         this.y = 20; // need to change for actual game
         texture = new Texture(Gdx.files.internal("exThrow.png"));
         horWrench = new Texture(Gdx.files.internal("BetterWrenchHorizontal.png"));

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.helper.TileMapHelper;
 
 import java.util.Iterator;
 
@@ -35,9 +36,9 @@ public class GameScreen implements Screen {
     int dropsGathered;
     private Stage stage;
 
-    TiledMap map1;
-    OrthogonalTiledMapRenderer tiledMapRenderer;
+    private TileMapHelper tileMapHelper;
 
+    private OrthogonalTiledMapRenderer tiledMapRenderer;
     float minX = 0;
     float minY = 0;
     float maxX = 6400;
@@ -76,9 +77,8 @@ public class GameScreen implements Screen {
         spawnRaindrop();
 
         //instantiate tile map
-        TmxMapLoader mapLoader = new TmxMapLoader();
-        map1 = mapLoader.load("Maps/map1.tmx");
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(map1);
+        this.tileMapHelper = new TileMapHelper();
+        this.tiledMapRenderer = tileMapHelper.setUpMap1();
 
     }
 
@@ -136,8 +136,8 @@ public class GameScreen implements Screen {
         // make sure the bucket stays within the screen bounds
         if (bucket.x < 0)
             bucket.x = 0;
-        if (bucket.x > 800 - 64)
-            bucket.x = 800 - 64;
+        if (bucket.x > 1536)
+            bucket.x = 1536;
 
         // check if we need to create a new raindrop
         if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
@@ -161,7 +161,7 @@ public class GameScreen implements Screen {
             }
         }
         // tell the camera to update its matrices.
-        camera.position.x = MathUtils.clamp(bucket.x + bucketImage.getWidth() / 2, minX + camera.viewportWidth / 2, maxX - camera.viewportWidth / 2);
+        camera.position.x = MathUtils.clamp(bucket.x + bucketImage.getWidth() / 2, minX + camera.viewportWidth / 2, 1440);
         camera.position.y = MathUtils.clamp(bucket.y + bucketImage.getHeight() / 2, minY + camera.viewportHeight / 2, maxY - camera.viewportHeight / 2);
         camera.update();
 
@@ -197,8 +197,8 @@ public class GameScreen implements Screen {
        // dropSound.dispose();
         rainMusic.dispose();
 
-        map1.dispose();
-        tiledMapRenderer.dispose();
+
+        //tiledMapRenderer.dispose();
     }
 
 }

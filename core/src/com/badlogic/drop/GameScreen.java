@@ -4,14 +4,18 @@ package com.badlogic.drop;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -21,7 +25,9 @@ import com.mygdx.game.helper.TileMapHelper;
 
 import java.util.Iterator;
 
-public class GameScreen implements Screen {
+import static com.mygdx.game.helper.Constants.PPM;
+
+public class GameScreen extends ScreenAdapter {
     final Drop game;
 
     Texture dropImage;
@@ -30,6 +36,10 @@ public class GameScreen implements Screen {
     Texture controlScreenImage;
     Music rainMusic;
     OrthographicCamera camera;
+    private SpriteBatch batch;
+    private World world;
+
+    private Box2DDebugRenderer box2DDebugRenderer;
     Rectangle bucket;
     Array<Rectangle> raindrops;
     long lastDropTime;
@@ -64,6 +74,9 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 320, 320);
 
+        this.batch = new SpriteBatch();
+        this.world = new World(new Vector2(0,0), false);
+        this.box2DDebugRenderer = new Box2DDebugRenderer();
         // create a Rectangle to logically represent the bucket
         bucket = new Rectangle();
         bucket.x = (float) 800 / 2 - (float) 64 / 2; // center the bucket horizontally
@@ -77,7 +90,7 @@ public class GameScreen implements Screen {
         spawnRaindrop();
 
         //instantiate tile map
-        this.tileMapHelper = new TileMapHelper();
+        this.tileMapHelper = new TileMapHelper(this);
         this.tiledMapRenderer = tileMapHelper.setUpMap1();
 
     }
@@ -101,9 +114,9 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
 
-
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
+        world.step(1/60f, 6, 2);
         game.batch.setProjectionMatrix(camera.combined);
 
         // begin a new batch and draw the bucket and
@@ -112,6 +125,7 @@ public class GameScreen implements Screen {
 
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
+
 
         game.font.draw(game.batch, "Treats Collected: " + dropsGathered, 0, 480);
         game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
@@ -165,6 +179,17 @@ public class GameScreen implements Screen {
         camera.position.y = MathUtils.clamp(bucket.y + bucketImage.getHeight() / 2, minY + camera.viewportHeight / 2, maxY - camera.viewportHeight / 2);
         camera.update();
 
+        box2DDebugRenderer.render(world, camera.combined.scl(PPM));
+    }
+
+    private void update(){
+
+
+    }
+
+
+    public World getWorld(){
+        return world;
     }
 
     @Override

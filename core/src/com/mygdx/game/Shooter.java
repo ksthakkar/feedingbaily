@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
-public class Shooter {
+public class Shooter extends GameObject {
     final Baily game;
 
     public int SPEED = 500;
@@ -21,6 +22,8 @@ public class Shooter {
     Animation<TextureRegion> animation;
     float stateTime;
 
+    Rectangle hitbox;
+
     public Shooter(float x, float y, final Baily game, int speed) {
         SPEED = speed;
         this.game = game;
@@ -29,7 +32,7 @@ public class Shooter {
         texture = new Texture(Gdx.files.internal("exThrow.png"));
         horWrench = new Texture(Gdx.files.internal("BetterWrenchHorizontal.png"));
         verWrench = new Texture(Gdx.files.internal("BetterWrenchVertical.png"));
-
+        hitbox = new Rectangle();
         textureRegion = new TextureRegion(new Texture(Gdx.files.internal("ThrownWrench.png")));
 
         int frameCols = 1; // Number of columns in the GIF
@@ -49,6 +52,8 @@ public class Shooter {
         float frameDuration = 0.3f; // Duration of each frame in seconds
         animation = new Animation<>(frameDuration, frames);
         stateTime = 0f; // Accumulated time for the animation
+
+        hitbox.set(x, y, textureRegion.getRegionWidth(), textureRegion.getRegionHeight());
     }
 
     public float getY() {
@@ -58,10 +63,14 @@ public class Shooter {
         return x;
     }
 
+    public Rectangle getWHitbox(){
+        return hitbox;
+    }
     public void update(float deltaTime) {
+        hitbox.set(x, y, textureRegion.getRegionWidth(), textureRegion.getRegionHeight());
+
         x += SPEED * deltaTime;
-        if (x > Gdx.graphics.getWidth() || x < 0)
-            remove = true;
+
     }
 
     public void render(SpriteBatch batch) {
@@ -69,5 +78,16 @@ public class Shooter {
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, true); // Get the current frame
 
         batch.draw(currentFrame, x, y); // Draw the current frame at the specified position
+    }
+
+
+    @Override
+    public int getLayer() {
+        return 0;
+    }
+
+    @Override
+    public String getTag() {
+        return null;
     }
 }

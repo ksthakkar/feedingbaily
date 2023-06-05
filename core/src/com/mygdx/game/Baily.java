@@ -3,6 +3,8 @@ package com.mygdx.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.title.MainMenuScreen;
+import com.mygdx.game.title.WinnerScreen;
 
 import java.nio.channels.spi.SelectorProvider;
 
@@ -21,7 +23,7 @@ public class Baily extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont(); // use libGDX's default Arial font
-        this.setScreen(new GameScreen(this));
+        this.setScreen(new MainMenuScreen(this));
 
     }
 
